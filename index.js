@@ -1,32 +1,8 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const session = require("express-session");
-const customer_routes = require("./Routes/user_auth").authenticated;
-const genl_routes = require("./Routes/general").general;
-
-let users = [];
-//Function to check if the user exists
-const doesExist = (username) => {
-  let userswithsamename = users.filter((user) => {
-    return user.username === username;
-  });
-  if (userswithsamename.length > 0) {
-    return true;
-  } else {
-    return false;
-  }
-};
-//Function to check if the user is authenticated
-const authenticatedUser = (username, password) => {
-  let validusers = users.filter((user) => {
-    return user.username === username && user.password === password;
-  });
-  if (validusers.length > 0) {
-    return true;
-  } else {
-    return false;
-  }
-};
+const customer_routes = require("./Routes/user_auth.js").authenticated;
+const genl_routes = require("./Routes/general.js").general;
 
 const app = express();
 
@@ -44,10 +20,8 @@ app.use(
 app.use("/customer/auth/*", function auth(req, res, next) {
   //Write the authenication mechanism here
   if (req.session.authorization) {
-    //get the authorization object stored in the session
-    token = req.session.authorization["accessToken"]; //retrieve the token from authorization object
+    token = req.session.authorization["accessToken"];
     jwt.verify(token, "access", (err, user) => {
-      //Use JWT to verify token
       if (!err) {
         req.user = user;
         next();
